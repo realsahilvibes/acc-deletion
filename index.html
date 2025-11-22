@@ -246,10 +246,11 @@
             ✓ Your deletion request has been submitted successfully. We'll process your request within 30 days and send a confirmation email.
         </div>
 
-        <form id="deletionForm" action="https://formspree.io/f/movbwwzp" method="POST">
+        <form id="deletionForm" action="https://formspree.io/f/chords.hello@zohomail.com" method="POST">
             <input type="hidden" name="_subject" value="Account Deletion Request - Chord Practice App">
-            <input type="hidden" name="_next" value="#success">
+            <input type="hidden" name="_next" value="https://realsahilvibes.github.io/acc-deletion/?success=true">
             <input type="hidden" name="_template" value="box">
+            <input type="hidden" name="_replyto" value="">
 
             <div class="form-group">
                 <label for="email">
@@ -306,10 +307,11 @@
         const successMessage = document.getElementById('successMessage');
 
         // Check if redirected after successful submission
-        if (window.location.hash === '#success') {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (window.location.hash === '#success' || urlParams.get('success') === 'true') {
             successMessage.style.display = 'block';
             form.style.display = 'none';
-            window.history.replaceState(null, null, ' ');
+            window.history.replaceState(null, null, window.location.pathname);
         }
 
         // Validate form before submission
