@@ -246,12 +246,7 @@
             ✓ Your deletion request has been submitted successfully. We'll process your request within 30 days and send a confirmation email.
         </div>
 
-        <form id="deletionForm" action="https://formspree.io/f/chords.hello@zohomail.com" method="POST">
-            <input type="hidden" name="_subject" value="Account Deletion Request - Chord Practice App">
-            <input type="hidden" name="_next" value="https://realsahilvibes.github.io/acc-deletion/?success=true">
-            <input type="hidden" name="_template" value="box">
-            <input type="hidden" name="_replyto" value="">
-
+        <form id="deletionForm">
             <div class="form-group">
                 <label for="email">
                     Email Address
@@ -292,7 +287,7 @@
                 </label>
             </div>
 
-            <button type="submit">Submit Deletion Request</button>
+            <button type="submit" id="submitBtn">Submit Deletion Request</button>
         </form>
 
         <div class="footer">
@@ -302,31 +297,59 @@
     </div>
 
     <script>
-        // Handle form submission success
         const form = document.getElementById('deletionForm');
         const successMessage = document.getElementById('successMessage');
+        const submitBtn = document.getElementById('submitBtn');
 
-        // Check if redirected after successful submission
-        const urlParams = new URLSearchParams(window.location.search);
-        if (window.location.hash === '#success' || urlParams.get('success') === 'true') {
-            successMessage.style.display = 'block';
-            form.style.display = 'none';
-            window.history.replaceState(null, null, window.location.pathname);
-        }
-
-        // Validate form before submission
+        // Validate and submit via mailto
         form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
             const emailInput = document.getElementById('email');
+            const reasonInput = document.getElementById('reason');
             const confirmCheckbox = document.getElementById('confirm');
 
+            // Validate required fields
             if (!emailInput.value || !confirmCheckbox.checked) {
-                e.preventDefault();
                 alert('Please fill in all required fields and confirm the deletion.');
                 return false;
             }
+
+            // Validate email format
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailPattern.test(emailInput.value)) {
+                alert('Please enter a valid email address.');
+                emailInput.focus();
+                return false;
+            }
+
+            // Prepare email content
+            const subject = 'Account Deletion Request - Chord Practice App';
+            const body = `Account Deletion Request
+
+Email Address: ${emailInput.value}
+
+Reason for Deletion:
+${reasonInput.value || 'Not specified'}
+
+Confirmation: User has confirmed they understand this action is permanent and irreversible.
+
+Request Date: ${new Date().toLocaleString()}`;
+
+            // Create mailto link
+            const mailtoLink = `mailto:chords.hello@zohomail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            
+            // Open email client
+            window.location.href = mailtoLink;
+
+            // Show success message
+            setTimeout(() => {
+                successMessage.style.display = 'block';
+                form.style.display = 'none';
+            }, 500);
         });
 
-        // Email validation
+        // Email validation on blur
         document.getElementById('email').addEventListener('blur', function() {
             const email = this.value;
             const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
